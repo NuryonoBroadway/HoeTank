@@ -17,37 +17,41 @@ import com.google.android.material.snackbar.Snackbar
 
 import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.text.Editable
 
 import android.text.TextWatcher
-
-
-
+import android.widget.Button
+import android.widget.EditText
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
-
+    private lateinit var jumlahHutang : EditText
+    private lateinit var jumlahHari : EditText
+    private lateinit var buttonConfirm : Button
+    private lateinit var bulanOrhariButton : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+
 
         setContentView(binding.root)
 
         supportActionBar?.hide()
 
-        val editText = binding.jumlahHariHutangEditText
-        val maxTextLength = 15
-        editText.filters = arrayOf<InputFilter>(LengthFilter(maxTextLength))
+        jumlahHutang = findViewById(R.id.jumlah_hutang_edit_text)
+        jumlahHari = findViewById(R.id.jumlah_hari_hutang_edit_text)
+        buttonConfirm = findViewById(R.id.ajukan_hutang)
+        bulanOrhariButton = findViewById(R.id.option_bulanan)
 
-        var jumlahHutang = binding.jumlahHutangEditText
-        val jumlahHari = binding.jumlahHariHutangEditText
-        val buttonConfirm = binding.ajukanHutang
+        val maxTextLength = 15
+        jumlahHari.filters = arrayOf<InputFilter>(LengthFilter(maxTextLength))
+
+
 
         jumlahHutang.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
@@ -56,7 +60,10 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 val user = jumlahHutang.text.toString().trim()
-                buttonConfirm.isEnabled = user.isNotEmpty()
+                buttonConfirm.isEnabled = user.length >= 6
+
+                bulanOrhariButton.isEnabled = user.length >= 7
+
             }
 
 
@@ -76,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        binding.ajukanHutang.setOnClickListener { calculateTip() }
+        binding.ajukanHutang.setOnClickListener { calculateHutang() }
 
         binding.jumlahHutangEditText.setOnKeyListener { view, keyCode, _ ->
             handleKeyEvent(
@@ -88,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
 
     @SuppressLint("StringFormatMatches")
-    private fun calculateTip() {
+    private fun calculateHutang() {
         val stringInTextField = binding.jumlahHutangEditText.text.toString()
         val cost = stringInTextField.toDoubleOrNull()
 
